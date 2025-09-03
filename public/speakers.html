@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invited Speakers - ICISE 2025</title>
+    <meta name="description" content="Meet our distinguished speakers for the Bacterial Pathogens and Host Cell Interactions conference">
+    
+    <!-- CSS Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-microscope me-2"></i>
+                ICISE 2025
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/committee.html">Committee</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/speakers.html">Speakers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/program.html">Program</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/venue.html">Venue</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/registration.html">Registration</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-microphone me-3"></i>Invited Speakers</h1>
+            <p>Distinguished researchers sharing their expertise in bacterial pathogenesis and host cell interactions</p>
+        </div>
+    </div>
+
+    <!-- Keynote Speakers Section -->
+    <section class="content-section">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">Keynote Speakers</h2>
+            <div id="keynote-speakers">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading keynote speakers...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- All Speakers Section -->
+    <section class="content-section">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">All Speakers</h2>
+            <div id="speakers-content">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading speakers...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call for Abstracts -->
+    <section class="content-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="section-title mb-4">Call for Abstracts</h2>
+                    <p class="lead mb-4">
+                        We invite researchers to submit abstracts for poster presentations and oral contributions. 
+                        This is an excellent opportunity to share your research with the international scientific community.
+                    </p>
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <div class="abstract-info">
+                                <h5><i class="fas fa-calendar-alt me-2"></i>Submission Deadline</h5>
+                                <p class="text-primary fw-bold">July 30, 2025</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="abstract-info">
+                                <h5><i class="fas fa-file-alt me-2"></i>Format</h5>
+                                <p>Poster presentations and selected oral talks</p>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/registration.html" class="btn btn-primary btn-lg">
+                        <i class="fas fa-paper-plane me-2"></i>Submit Abstract
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2025 ICISE. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">Bacterial Pathogens and Host Cell Interactions Conference</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+    
+    <style>
+    .abstract-info {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(15, 43, 76, 0.1);
+        height: 100%;
+    }
+    
+    .abstract-info h5 {
+        color: var(--title-color);
+        margin-bottom: 1rem;
+    }
+    </style>
+    
+    <script>
+    // Load speakers when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSpeakersPage();
+    });
+    
+    async function loadSpeakersPage() {
+        try {
+            // Load all speakers
+            const response = await fetch('/api/speakers');
+            const speakers = await response.json();
+            
+            // Separate keynote speakers
+            const keynoteSpeakers = speakers.filter(speaker => speaker.isKeynote);
+            const regularSpeakers = speakers.filter(speaker => !speaker.isKeynote);
+            
+            // Display keynote speakers
+            displayKeynoteSpeak(keynoteSpeakers);
+            
+            // Display all speakers
+            displayAllSpeakers(speakers);
+            
+        } catch (error) {
+            console.error('Error loading speakers:', error);
+            document.getElementById('speakers-content').innerHTML = `
+                <div class="text-center">
+                    <p class="lead">Speaker information will be available soon.</p>
+                </div>
+            `;
+        }
+    }
+    
+    function displayKeynoteSpeak(speakers) {
+        const container = document.getElementById('keynote-speakers');
+        
+        if (speakers.length === 0) {
+            container.innerHTML = `
+                <div class="text-center">
+                    <p class="lead">Keynote speakers will be announced soon.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '<div class="row g-4">';
+        speakers.forEach(speaker => {
+            html += createSpeakerCard(speaker, true);
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
+    }
+    
+    function displayAllSpeakers(speakers) {
+        const container = document.getElementById('speakers-content');
+        
+        if (speakers.length === 0) {
+            container.innerHTML = `
+                <div class="text-center">
+                    <p class="lead">Speaker announcements coming soon!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '<div class="row g-4">';
+        speakers.forEach(speaker => {
+            html += createSpeakerCard(speaker, false);
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
+    }
+    
+    function createSpeakerCard(speaker, isKeynote = false) {
+        const cardClass = isKeynote ? 'col-lg-6' : 'col-lg-4 col-md-6';
+        return `
+            <div class="${cardClass}">
+                <div class="speaker-card">
+                    <div class="speaker-image">
+                        <img src="${speaker.image || '/images/default-speaker.jpg'}" 
+                             alt="${speaker.name}" 
+                             onerror="this.src='/images/default-speaker.jpg'">
+                        ${isKeynote ? '<div class="keynote-badge"><i class="fas fa-star"></i> Keynote</div>' : ''}
+                    </div>
+                    <div class="speaker-content">
+                        <h3 class="speaker-name">${speaker.name}</h3>
+                        ${speaker.title ? `<p class="speaker-title">${speaker.title}</p>` : ''}
+                        ${speaker.affiliation ? `<p class="speaker-affiliation">${speaker.affiliation}</p>` : ''}
+                        ${speaker.bio ? `<p class="speaker-bio">${truncateText(speaker.bio, 150)}</p>` : ''}
+                        ${speaker.talkTitle ? `
+                            <div class="speaker-talk mt-3">
+                                <h6 class="text-primary">Talk: ${speaker.talkTitle}</h6>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    function truncateText(text, length) {
+        if (text.length <= length) return text;
+        return text.substring(0, length) + '...';
+    }
+    </script>
+    
+    <style>
+    .keynote-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--gradient-right);
+        color: var(--title-color);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    
+    .speaker-image {
+        position: relative;
+    }
+    </style>
+</body>
+</html>
+
+

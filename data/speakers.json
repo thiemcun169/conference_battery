@@ -1,0 +1,28 @@
+[
+  {
+    "id": "1",
+    "name": "Dr. Sarah Johnson",
+    "title": "Professor of Microbiology",
+    "affiliation": "Harvard Medical School",
+    "bio": "Dr. Johnson is a leading researcher in bacterial pathogenesis with over 20 years of experience.",
+    "email": "sarah.johnson@harvard.edu",
+    "talkTitle": "Host-Pathogen Interactions in Bacterial Infections",
+    "talkType": "keynote",
+    "isKeynote": true,
+    "isPublished": true,
+    "order": 1
+  },
+  {
+    "id": "2",
+    "name": "Prof. Michael Chen",
+    "title": "Director of Infectious Disease Research",
+    "affiliation": "Stanford University",
+    "bio": "Prof. Chen specializes in antimicrobial resistance and novel therapeutic approaches.",
+    "email": "mchen@stanford.edu",
+    "talkTitle": "Novel Therapeutic Strategies Against Bacterial Pathogens",
+    "talkType": "plenary",
+    "isKeynote": false,
+    "isPublished": true,
+    "order": 2
+  }
+]

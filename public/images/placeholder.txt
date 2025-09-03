@@ -1,0 +1,24 @@
+# Image Directory
+
+This directory should contain the following images for the conference website:
+
+## Required Images:
+- hero-bg.jpg - Hero section background image (1920x1080 recommended)
+- icise-venue.jpg - ICISE venue photograph
+- default-speaker.jpg - Default speaker placeholder image (400x400 recommended)
+- favicon.ico - Website favicon
+
+## Suggested Images:
+- logo.png - Conference or ICISE logo
+- quy-nhon-1.jpg, quy-nhon-2.jpg - Additional venue/location images
+- speakers/ directory - Individual speaker photos
+
+## Image Guidelines:
+- Use high-quality images (at least 1080p for backgrounds)
+- Optimize file sizes for web (use JPEG for photos, PNG for logos)
+- Maintain consistent aspect ratios for speaker photos
+- Ensure images are properly licensed for use
+
+You can add images to this directory and they will be accessible at /images/[filename]
+
+
