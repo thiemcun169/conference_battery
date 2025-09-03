@@ -1,17 +1,17 @@
 /* Custom CSS for ICISE Conference Website */
 
 :root {
-    --primary-color: #0F2B4C;
-    --secondary-color: #BDE4E1;
-    --accent-color: #C6EDC9;
-    --gradient-left: #BDE4E1;
-    --gradient-center: #C6EDC9;
-    --gradient-right: #E8EDA9;
-    --title-color: #0F2B4C;
-    --dark-color: #1f2937;
-    --light-color: #f8fafc;
-    --text-color: #374151;
-    --border-color: #e5e7eb;
+    --primary-color: #388E3C;
+    --secondary-color: #8BC34A;
+    --accent-color: #DDEEDF;
+    --gradient-left: #F2F9F1;
+    --gradient-center: #DDEEDF;
+    --gradient-right: #8BC34A;
+    --title-color: #388E3C;
+    --dark-color: #2E7D32;
+    --light-color: #F2F9F1;
+    --text-color: #1B5E20;
+    --border-color: #C8E6C9;
 }
 
 * {
@@ -24,13 +24,13 @@ body {
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
     color: var(--text-color);
-    background: linear-gradient(90deg, var(--gradient-left), var(--gradient-center), var(--gradient-right));
+    background: var(--light-color);
     min-height: 100vh;
 }
 
 /* Navigation */
 .navbar {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    background: var(--primary-color) !important;
     backdrop-filter: blur(10px);
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
@@ -112,7 +112,7 @@ body {
     font-size: 1.3rem;
     font-weight: 500;
     margin-bottom: 0.5rem;
-    color: var(--accent-color);
+    color: var(--secondary-color);
     animation: fadeInUp 1s ease-out 0.4s both;
 }
 
@@ -156,7 +156,7 @@ body {
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background: linear-gradient(90deg, var(--gradient-center), var(--gradient-right));
+    background: var(--secondary-color);
     border-radius: 2px;
 }
 
@@ -173,7 +173,7 @@ body {
 
 /* Topic Cards */
 .topic-card {
-    background: white;
+    background: var(--accent-color);
     padding: 2rem;
     border-radius: 15px;
     text-align: center;
@@ -190,7 +190,7 @@ body {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+    background: var(--secondary-color);
 }
 
 .topic-card:hover {
@@ -201,7 +201,7 @@ body {
 .topic-icon {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    background: var(--primary-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -219,7 +219,7 @@ body {
 
 /* Important Dates */
 .dates-table {
-    background: white;
+    background: var(--accent-color);
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -255,7 +255,7 @@ body {
 
 /* Speaker Cards */
 .speaker-card {
-    background: white;
+    background: var(--accent-color);
     border-radius: 15px;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -331,7 +331,7 @@ body {
 
 /* Contact */
 .contact-info {
-    background: white;
+    background: var(--accent-color);
     padding: 2rem;
     border-radius: 15px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
@@ -811,3 +811,73 @@ i[class*="fa-shield"]::before { content: "🛡️"; font-family: Arial, sans-ser
 i[class*="fa-users"]::before { content: "👥"; font-family: Arial, sans-serif; }
 i[class*="fa-user-plus"]::before { content: "👤"; font-family: Arial, sans-serif; }
 i[class*="fa-map-marker"]::before { content: "📍"; font-family: Arial, sans-serif; }
+
+/* Main Section Backgrounds */
+.main-section {
+    background: var(--primary-color);
+    padding: 4rem 0;
+    margin: 2rem 0;
+    color: white;
+}
+
+.main-section .section-title {
+    color: white;
+}
+
+.main-section .section-title::after {
+    background: var(--secondary-color);
+}
+
+/* Section Separators */
+.section-separator {
+    background: var(--light-color);
+    height: 2rem;
+}
+
+/* Card Enhancements */
+.info-card {
+    background: var(--accent-color);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.info-card p {
+    color: var(--text-color);
+}
+
+/* Quick Links Section */
+.quick-links {
+    background: var(--primary-color);
+    color: white;
+    padding: 3rem 0;
+}
+
+.quick-links .section-title {
+    color: white;
+}
+
+.quick-links .section-title::after {
+    background: var(--secondary-color);
+}
+
+/* Registration Section */
+.registration-section {
+    background: var(--primary-color);
+    color: white;
+    padding: 4rem 0;
+}
+
+.registration-section .section-title {
+    color: white;
+}
+
+.registration-section .section-title::after {
+    background: var(--secondary-color);
+}
