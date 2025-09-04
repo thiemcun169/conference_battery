@@ -185,7 +185,17 @@
         color: var(--text-color);
     }
     
+    /* Ensure Program Overview has same size as other section titles */
+    .section-title {
+        font-size: 2.5rem !important;
+        font-weight: 700 !important;
+    }
+    
     @media (max-width: 768px) {
+        .section-title {
+            font-size: 2rem !important;
+        }
+        
         .schedule-item {
             flex-direction: column;
         }
