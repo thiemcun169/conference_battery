@@ -10,7 +10,7 @@ require('dotenv').config();
 
 const app = express();
 
-// Security middleware
+// Security middleware with production optimizations
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -21,8 +21,24 @@ app.use(helmet({
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       connectSrc: ["'self'"]
     }
-  }
+  },
+  hsts: process.env.NODE_ENV === 'production' ? {
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true
+  } : false
 }));
+
+// Add production-specific security headers
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'DENY');
+    res.set('X-XSS-Protection', '1; mode=block');
+    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+  });
+}
 
 // Rate limiting - More relaxed for development/demo
 const limiter = rateLimit({
@@ -53,9 +69,114 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Static files
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+// Create router for /conference_battery subpath with clean URLs
+const conferenceRouter = express.Router();
+
+// Redirect old .html URLs to clean URLs for /conference_battery subpath (MUST COME FIRST)
+conferenceRouter.get('/committee.html', (req, res) => {
+  res.redirect(301, '/conference-battery/committee');
+});
+
+conferenceRouter.get('/speakers.html', (req, res) => {
+  res.redirect(301, '/conference-battery/speakers');
+});
+
+conferenceRouter.get('/program.html', (req, res) => {
+  res.redirect(301, '/conference-battery/program');
+});
+
+conferenceRouter.get('/venue.html', (req, res) => {
+  res.redirect(301, '/conference-battery/venue');
+});
+
+conferenceRouter.get('/registration.html', (req, res) => {
+  res.redirect(301, '/conference-battery/registration');
+});
+
+conferenceRouter.get('/contact.html', (req, res) => {
+  res.redirect(301, '/conference-battery/contact');
+});
+
+// Clean URL routes for /conference_battery subpath
+conferenceRouter.get('/committee', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/committee.html');
+});
+
+conferenceRouter.get('/speakers', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/speakers.html');
+});
+
+conferenceRouter.get('/program', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/program.html');
+});
+
+conferenceRouter.get('/venue', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/venue.html');
+});
+
+conferenceRouter.get('/registration', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/registration.html');
+});
+
+conferenceRouter.get('/contact', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/contact.html');
+});
+
+// Main index route for conference_battery subpath
+conferenceRouter.get('/', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/index.html');
+});
+
+// Mount the conference router at /conference-battery BEFORE static files
+app.use('/conference-battery', conferenceRouter);
+
+// Static files with production optimizations (after dynamic routes)
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0, // Cache for 1 day in production
+  etag: true,
+  lastModified: true,
+  // Only serve static files, not arbitrary paths
+  setHeaders: (res, path) => {
+    // Only allow serving files from specific directories
+    const allowedDirs = ['/css/', '/js/', '/images/', '/uploads/'];
+    const isAllowed = allowedDirs.some(dir => path.includes(dir)) ||
+                     path.endsWith('.ico') || path.endsWith('.txt') ||
+                     path.endsWith('.xml') || path.endsWith('.json');
+
+    if (!isAllowed) {
+      // If it's not an allowed static file, don't serve it
+      res.status(404).end();
+      return;
+    }
+
+    if (path.endsWith('.html')) {
+      res.set('Cache-Control', 'no-cache');
+    }
+  }
+}));
+
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
+  maxAge: process.env.NODE_ENV === 'production' ? '7d' : 0, // Cache uploads for 7 days in production
+  etag: true,
+  lastModified: true
+}));
+
+// Add cache control for static assets
+app.use('/css', express.static(path.join(__dirname, 'public/css'), {
+  maxAge: process.env.NODE_ENV === 'production' ? '1y' : 0, // Cache CSS for 1 year in production
+  etag: false // Disable etag for versioned assets
+}));
+
+app.use('/js', express.static(path.join(__dirname, 'public/js'), {
+  maxAge: process.env.NODE_ENV === 'production' ? '1y' : 0, // Cache JS for 1 year in production
+  etag: false // Disable etag for versioned assets
+}));
+
+app.use('/images', express.static(path.join(__dirname, 'public/images'), {
+  maxAge: process.env.NODE_ENV === 'production' ? '30d' : 0, // Cache images for 30 days in production
+  etag: true,
+  lastModified: true
+}));
 
 // Simple data storage (JSON files)
 const dataDir = path.join(__dirname, 'data');
@@ -393,7 +514,10 @@ app.put('/api/admin/registrations/:id/status', (req, res) => {
 
 // Serve main website
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  const filePath = '/home/toanmap/SERVER/conference_battery/public/pages/index.html';
+  console.log('Serving file from:', filePath);
+  console.log('File exists:', fs.existsSync(filePath));
+  res.sendFile(filePath);
 });
 
 // Serve admin assets securely
@@ -410,12 +534,12 @@ app.get('/api/admin/pages/:filename', (req, res) => {
   try {
     const filename = req.params.filename;
     const allowedFiles = ['index.html', 'committee.html', 'speakers.html', 'program.html', 'venue.html', 'registration.html', 'contact.html'];
-    
+
     if (!allowedFiles.includes(filename)) {
       return res.status(400).json({ message: 'Invalid file name' });
     }
-    
-    const filePath = path.join(__dirname, 'public', filename);
+
+    const filePath = `/home/toanmap/SERVER/conference_battery/public/pages/${filename}`;
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ message: 'File not found' });
     }
@@ -443,16 +567,16 @@ app.put('/api/admin/pages/:filename', (req, res) => {
     const { content } = req.body;
     
     const allowedFiles = ['index.html', 'committee.html', 'speakers.html', 'program.html', 'venue.html', 'registration.html', 'contact.html'];
-    
+
     if (!allowedFiles.includes(filename)) {
       return res.status(400).json({ message: 'Invalid file name' });
     }
-    
+
     if (!content) {
       return res.status(400).json({ message: 'Content is required' });
     }
-    
-    const filePath = path.join(__dirname, 'public', filename);
+
+    const filePath = `/home/toanmap/SERVER/conference_battery/public/pages/${filename}`;
     
     // Create backup before saving
     const backupDir = path.join(__dirname, 'backups');
@@ -488,38 +612,72 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin', 'admin.html'));
 });
 
-// Handle specific page routes
+// Main app routes removed - only /conference_battery subpath routes are active
+
+// Handle specific routes only - NO root route to prevent serving on main domain
+
+// Redirect .html URLs to clean URLs (MUST COME FIRST)
 app.get('/committee.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'committee.html'));
+  res.redirect(301, '/committee');
 });
 
 app.get('/speakers.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'speakers.html'));
+  res.redirect(301, '/speakers');
 });
 
 app.get('/program.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'program.html'));
+  res.redirect(301, '/program');
 });
 
 app.get('/venue.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'venue.html'));
+  res.redirect(301, '/venue');
 });
 
 app.get('/registration.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'registration.html'));
+  res.redirect(301, '/registration');
 });
 
 app.get('/contact.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'contact.html'));
+  res.redirect(301, '/contact');
 });
 
-// Handle all other routes for SPA
-app.get('*', (req, res) => {
-  if (req.path.startsWith('/admin')) {
+// Direct clean URL routes (without /conference-battery prefix)
+app.get('/committee', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/committee.html');
+});
+
+app.get('/speakers', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/speakers.html');
+});
+
+app.get('/program', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/program.html');
+});
+
+app.get('/venue', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/venue.html');
+});
+
+app.get('/registration', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/registration.html');
+});
+
+app.get('/contact', (req, res) => {
+  res.sendFile('/home/toanmap/SERVER/conference_battery/public/pages/contact.html');
+});
+
+// Handle admin routes
+app.get('/admin*', (req, res) => {
+  if (req.path === '/admin' || req.path === '/admin/') {
     res.sendFile(path.join(__dirname, 'admin', 'admin.html'));
   } else {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.status(404).json({ message: 'Admin route not found' });
   }
+});
+
+// Reject all other paths - Allow direct routes, /conference-battery/*, and /admin/*
+app.get('*', (req, res) => {
+  res.status(404).json({ message: 'Path not found.' });
 });
 
 // Error handling middleware
@@ -528,12 +686,20 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
+const BASE_PATH = process.env.BASE_PATH || '';
+
+console.log(`🔧 Environment variables:`);
+console.log(`   PORT: ${PORT}`);
+console.log(`   BASE_PATH: '${BASE_PATH}'`);
+console.log(`   NODE_ENV: ${process.env.NODE_ENV}`);
 
 app.listen(PORT, () => {
   console.log(`🚀 Conference website is running!`);
-  console.log(`📱 Main website: http://localhost:${PORT}`);
-  console.log(`⚙️  Admin panel: http://localhost:${PORT}/admin`);
+  console.log(`📱 Main website: http://localhost:${PORT}${BASE_PATH}`);
+  console.log(`⚙️  Admin panel: http://localhost:${PORT}${BASE_PATH}/admin`);
   console.log(`👤 Admin login: admin@icisequynhon.com / admin123`);
   console.log(`💡 Note: This is a demo version without MongoDB`);
+  console.log(`🔗 Base path: ${BASE_PATH || 'none'}`);
+  console.log(`🔗 Conference Battery: http://localhost:${PORT}${BASE_PATH}/conference-battery`);
 });
